@@ -1,76 +1,116 @@
 version: "3.9"
 
 services:
-  node1:
-    image: ubuntu:24.04
+
+  # ── node01 ─────────────────────────────────────────────────────────────────
+  node01:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hadoop-cluster:latest
     container_name: node01
     hostname: node01
     ports:
-      - "8481:8480"
-      - "9871:9870"
-      - "8081:8088"
-    command: sleep infinity
+      - "9871:9870" # NameNode Web UI
+      - "8081:8088" # ResourceManager Web UI
+      - "8481:8480" # JournalNode HTTP
+      - "2181:2181" # ZooKeeper client
     volumes:
       - ./shared:/shared
+      - node01-data:/opt/hadoop/data
+      - node01-zk:/opt/zookeeper/data
     networks:
       - cluster-network
+    environment:
+      - NODE_ROLE=node01
 
-  node2:
-    image: ubuntu:24.04
+  # ── node02 ─────────────────────────────────────────────────────────────────
+  node02:
+    image: hadoop-cluster:latest
     container_name: node02
     hostname: node02
     ports:
-      - "8482:8480"
-      - "9872:9870"
-      - "8082:8088"
-    command: sleep infinity
+      - "9872:9870" # NameNode Web UI (Standby)
+      - "8082:8088" # ResourceManager Web UI (Standby)
+      - "8482:8480" # JournalNode HTTP
+      - "2182:2181" # ZooKeeper client
     volumes:
       - ./shared:/shared
+      - node02-data:/opt/hadoop/data
+      - node02-zk:/opt/zookeeper/data
     networks:
       - cluster-network
+    environment:
+      - NODE_ROLE=node02
+    depends_on:
+      - node01
 
-  node3:
-    image: ubuntu:24.04
+  # ── node03 ─────────────────────────────────────────────────────────────────
+  node03:
+    image: hadoop-cluster:latest
     container_name: node03
     hostname: node03
     ports:
-      - "8483:8480"
-      - "9873:9870"
-      - "8083:8088"
-    command: sleep infinity
+      - "8483:8480" # JournalNode HTTP
+      - "2183:2181" # ZooKeeper client
+      - "8083:8042" # NodeManager Web UI
     volumes:
       - ./shared:/shared
+      - node03-data:/opt/hadoop/data
+      - node03-zk:/opt/zookeeper/data
     networks:
       - cluster-network
+    environment:
+      - NODE_ROLE=node03
+    depends_on:
+      - node01
 
-  node4:
-    image: ubuntu:24.04
+  # ── node04 ─────────────────────────────────────────────────────────────────
+  node04:
+    image: hadoop-cluster:latest
     container_name: node04
     hostname: node04
     ports:
-      - "8484:8480"
-      - "9874:9870"
-      - "8084:8088"
-    command: sleep infinity
+      - "8084:8042" # NodeManager Web UI
     volumes:
       - ./shared:/shared
+      - node04-data:/opt/hadoop/data
     networks:
       - cluster-network
+    environment:
+      - NODE_ROLE=node04
+    depends_on:
+      - node01
 
-  node5:
-    image: ubuntu:24.04
+  # ── node05 ─────────────────────────────────────────────────────────────────
+  node05:
+    image: hadoop-cluster:latest
     container_name: node05
     hostname: node05
     ports:
-      - "8485:8480"
-      - "9875:9870"
-      - "8085:8088"
-    command: sleep infinity
+      - "8085:8042" # NodeManager Web UI
     volumes:
       - ./shared:/shared
+      - node05-data:/opt/hadoop/data
     networks:
       - cluster-network
+    environment:
+      - NODE_ROLE=node05
+    depends_on:
+      - node01
 
+# ── Named volumes ─────────────────────────────────────────────────────────────
+volumes:
+  node01-data:
+  node01-zk:
+  node02-data:
+  node02-zk:
+  node03-data:
+  node03-zk:
+  node04-data:
+  node05-data:
+
+    # ── Network ───────────────────────────────────────────────────────────────────
 networks:
   cluster-network:
     driver: bridge
