@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     openssh-server \
     openssh-client \
     wget vim curl net-tools \
+    netcat-openbsd \
     pdsh \
     sudo \
     && rm -rf /var/lib/apt/lists/*
@@ -40,14 +41,14 @@ RUN mkdir -p /root/.ssh && \
     echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
     echo "StrictHostKeyChecking no" >> /root/.ssh/config
 
-# Copy Hadoop config files
-COPY config/hadoop/core-site.xml      $HADOOP_CONF_DIR/
-COPY config/hadoop/hdfs-site.xml      $HADOOP_CONF_DIR/
-COPY config/hadoop/yarn-site.xml      $HADOOP_CONF_DIR/
-COPY config/hadoop/mapred-site.xml    $HADOOP_CONF_DIR/
-COPY config/hadoop/workers            $HADOOP_CONF_DIR/
-COPY config/hadoop/hadoop-env.sh      $HADOOP_CONF_DIR/
-COPY config/zookeeper/zoo.cfg         $ZOOKEEPER_CONF_DIR/
+# Copy Hadoop and ZooKeeper config files from the new shared path
+COPY shared/config/hadoop/core-site.xml      $HADOOP_CONF_DIR/
+COPY shared/config/hadoop/hdfs-site.xml      $HADOOP_CONF_DIR/
+COPY shared/config/hadoop/yarn-site.xml      $HADOOP_CONF_DIR/
+COPY shared/config/hadoop/mapred-site.xml    $HADOOP_CONF_DIR/
+COPY shared/config/hadoop/workers            $HADOOP_CONF_DIR/
+COPY shared/config/hadoop/hadoop-env.sh      $HADOOP_CONF_DIR/
+COPY shared/config/zookeeper/zoo.cfg         $ZOOKEEPER_CONF_DIR/
 
 # Start SSH on container start
 CMD service ssh start && sleep infinity
