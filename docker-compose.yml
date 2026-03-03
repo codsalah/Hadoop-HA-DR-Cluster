@@ -26,7 +26,7 @@ services:
     environment:
       - NODE_ROLE=node01
     healthcheck:
-      test: [ "CMD", "jps", "|", "grep", "NameNode" ]
+      test: ["CMD-SHELL", "jps | grep -q NameNode"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -52,7 +52,8 @@ services:
     environment:
       - NODE_ROLE=node02
     depends_on:
-      - node01
+      node01:
+        condition: service_healthy
 
   # ── node03 ─────────────────────────────────────────────────────────────────
   node03:
@@ -74,7 +75,8 @@ services:
     environment:
       - NODE_ROLE=node03
     depends_on:
-      - node01
+      node01:
+        condition: service_healthy
 
   # ── node04 ─────────────────────────────────────────────────────────────────
   node04:
@@ -92,7 +94,8 @@ services:
     environment:
       - NODE_ROLE=node04
     depends_on:
-      - node01
+      node01:
+        condition: service_healthy
 
   # ── node05 ─────────────────────────────────────────────────────────────────
   node05:
@@ -110,7 +113,8 @@ services:
     environment:
       - NODE_ROLE=node05
     depends_on:
-      - node01
+      node01:
+        condition: service_healthy
 
 # ── Named volumes ─────────────────────────────────────────────────────────────
 volumes:
