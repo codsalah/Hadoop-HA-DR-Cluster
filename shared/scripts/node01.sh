@@ -51,7 +51,7 @@ mkdir -p $JOURNAL_DIR
 log "Starting JournalNode..."
 $HADOOP_HOME/bin/hdfs --daemon start journalnode
 sleep 3
-log "✅ JournalNode started"
+log "JournalNode started"
 
 # ── Format NameNode (only if not already formatted) 
 mkdir -p $NAMENODE_DIR
@@ -59,7 +59,7 @@ mkdir -p $NAMENODE_DIR
 if [[ ! -f $NAMENODE_DIR/current/VERSION ]]; then
   log "Formatting NameNode with clusterId=$CLUSTER_ID"
   $HADOOP_HOME/bin/hdfs namenode -format -clusterId $CLUSTER_ID -force
-  log "✅ NameNode formatted"
+  log "NameNode formatted"
 else
   log "NameNode already formatted — skipping format"
 fi
@@ -67,7 +67,7 @@ fi
 # ── Initialize ZooKeeper for ZKFC 
 log "Initializing ZooKeeper failover controller..."
 $HADOOP_HOME/bin/hdfs zkfc -formatZK -force
-log "✅ ZooKeeper formatted for ZKFC"
+log "ZooKeeper formatted for ZKFC"
 
 # ── Start NameNode 
 log "Starting NameNode..."

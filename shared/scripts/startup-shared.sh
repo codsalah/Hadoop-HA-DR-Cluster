@@ -11,17 +11,26 @@ if [ -f "$ZK_TAR" ]; then
     echo "ZooKeeper tarball already exists — skipping download"
 else
     echo "Downloading ZooKeeper..."
+<<<<<<< HEAD
     wget -P "$SHARED_DIR" "$ZK_URL" || { echo "❌ ZooKeeper download failed"; exit 1; }
     echo "ZooKeeper downloaded"
+=======
+    wget -P "$SHARED_DIR" "$ZK_URL" || { echo "ZooKeeper download failed"; exit 1; }
+    echo "✅ ZooKeeper downloaded"
+>>>>>>> ac9b7d6 (chore: cleaned up scripts by removing unnecessary parts of the logging process)
 fi
 
 if [ -f "$HADOOP_TAR" ]; then
     echo "Hadoop tarball already exists — skipping download"
 else
     echo "Downloading Hadoop..."
+<<<<<<< HEAD
     wget -P "$SHARED_DIR" "$HADOOP_URL" || { echo "❌ Hadoop download failed"; exit 1; }
     echo "Hadoop downloaded"
+=======
+    wget -P "$SHARED_DIR" "$HADOOP_URL" || { echo "Hadoop download failed"; exit 1; }
+    echo "✅ Hadoop downloaded"
+>>>>>>> ac9b7d6 (chore: cleaned up scripts by removing unnecessary parts of the logging process)
 fi
-
 echo ""
 echo "All downloads complete. You can now run docker-compose up -d"

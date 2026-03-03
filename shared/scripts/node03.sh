@@ -39,20 +39,20 @@ sleep 3
 
 # Verify JournalNode is listening
 nc -z localhost 8485 2>/dev/null && \
-  log "✅ JournalNode is up and listening on port 8485" || \
-  log "⚠️  JournalNode may not be ready yet — check logs"
+  log "JournalNode is up and listening on port 8485" || \
+  log "JournalNode may not be ready yet — check logs"
 
 # ── Start DataNode 
 log "Starting DataNode..."
 $HADOOP_HOME/bin/hdfs --daemon start datanode
 sleep 2
-log "✅ DataNode started"
+log "DataNode started"
 
 # ── Start NodeManager 
 log "Starting NodeManager..."
 $HADOOP_HOME/bin/yarn --daemon start nodemanager
 sleep 2
-log "✅ NodeManager started"
+log "NodeManager started"
 
 # ── Summary logging
 echo ""
