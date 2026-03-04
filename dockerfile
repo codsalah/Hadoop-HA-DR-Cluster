@@ -8,15 +8,12 @@ RUN apt-get update && apt-get install -y \
     openjdk-11-jdk \
     openssh-server \
     openssh-client \
-<<<<<<< HEAD
     wget vim curl net-tools \
     netcat-openbsd \
     pdsh \
     sudo \
-=======
-    wget vim net-tools \
-    netcat-openbsd \
->>>>>>> origin/cluster-automation
+    dos2unix \
+
     && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
@@ -46,14 +43,16 @@ RUN mkdir -p /root/.ssh && \
     echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
     echo "StrictHostKeyChecking no" >> /root/.ssh/config
 
-# Copy Hadoop and ZooKeeper config files from the new shared path
+# Copy Hadoop config files
+# Copy Hadoop & ZooKeeper config files
 COPY shared/config/hadoop/core-site.xml      $HADOOP_CONF_DIR/
 COPY shared/config/hadoop/hdfs-site.xml      $HADOOP_CONF_DIR/
 COPY shared/config/hadoop/yarn-site.xml      $HADOOP_CONF_DIR/
 COPY shared/config/hadoop/mapred-site.xml    $HADOOP_CONF_DIR/
 COPY shared/config/hadoop/workers            $HADOOP_CONF_DIR/
 COPY shared/config/hadoop/hadoop-env.sh      $HADOOP_CONF_DIR/
-COPY shared/config/zookeeper/zoo.cfg         $ZOOKEEPER_CONF_DIR/
+COPY shared/config/zookeeper/zoo.cfg         $ZOOKEEPER_HOME/conf/
 
+RUN dos2unix $HADOOP_CONF_DIR/* $ZOOKEEPER_HOME/conf/zoo.cfg
 # Start SSH on container start
 CMD service ssh start && sleep infinity

@@ -9,7 +9,6 @@ HADOOP_HOME=/opt/hadoop
 ZK_HOME=/opt/zookeeper
 JOURNAL_DIR=/var/hadoop/journal
 
-
 log()  { echo "[$(date '+%H:%M:%S')] $*"; }
 ok()   { echo "[$(date '+%H:%M:%S')] OK: $*"; }
 fail() { echo "[$(date '+%H:%M:%S')] FAIL: $*"; exit 1; }
@@ -53,20 +52,21 @@ done
 # ── Step 2: node03 (JournalNode must be up before NameNode formats) ───────────
 log "STEP 2/5 — node03 (JournalNode + DataNode + NodeManager)"
 ssh root@node03 "bash $SCRIPTS_DIR/node03.sh" &
-ssh root@node02 "hdfs --daemon start journalnode" & 
-ssh root@node02 "mkdir -p $JOURNAL_DIR" &
+
+ssh root@node02 "mkdir -p $JOURNAL_DIR && $HADOOP_HOME/bin/hdfs --daemon start journalnode" &
+
+# Wait for both JournalNodes to be ready before moving on
 wait_for_port node03 8485 "JournalNode node03"
+wait_for_port node02 8485 "JournalNode node02"
 
 # ── Step 3: node01 (Active NameNode + ZKFC + ResourceManager) ────────────────
 log "STEP 3/5 — node01 (Active NameNode + ZKFC + ResourceManager)"
 bash $SCRIPTS_DIR/node01.sh
-# wait_for_port node01 8020 "Active NameNode"
 ok "nn1: $($HADOOP_HOME/bin/hdfs haadmin -getServiceState nn1 2>/dev/null)"
 
 # ── Step 4: node02 (Standby NameNode + ZKFC + ResourceManager) ───────────────
 log "STEP 4/5 — node02 (Standby NameNode + ZKFC + ResourceManager)"
 ssh root@node02 "bash $SCRIPTS_DIR/node02.sh"
-# wait_for_port node02 8020 "Standby NameNode"
 ok "nn2: $($HADOOP_HOME/bin/hdfs haadmin -getServiceState nn2 2>/dev/null)"
 
 # ── Step 5: Workers (node04, node05) ─────────────────────────────────────────

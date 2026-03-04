@@ -32,6 +32,8 @@ else
     echo "Downloading ZooKeeper..."
     wget -P "$SHARED_DIR" "$ZK_URL" || { echo "❌ ZooKeeper download failed"; exit 1; }
     echo "ZooKeeper downloaded"
+    wget -P "$SHARED_DIR" "$ZK_URL" || { echo "ZooKeeper download failed"; exit 1; }
+    echo "✅ ZooKeeper downloaded"
 fi
 
 if [ -f "$HADOOP_TAR" ]; then
@@ -40,8 +42,10 @@ else
     echo "Downloading Hadoop..."
     wget -P "$SHARED_DIR" "$HADOOP_URL" || { echo "❌ Hadoop download failed"; exit 1; }
     echo "Hadoop downloaded"
-fi
 
+    wget -P "$SHARED_DIR" "$HADOOP_URL" || { echo "Hadoop download failed"; exit 1; }
+    echo "Hadoop downloaded"
+fi
 echo ""
 echo "All downloads complete. You can now run docker-compose up -d"
 >>>>>>> origin/cluster-automation
