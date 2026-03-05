@@ -23,13 +23,13 @@ for node in node01 node02 node03 node04 node05; do
   # 1. Copy Hadoop Configs
   ssh root@$node "cp $SHARED_HADOOP/* $HADOOP_CONF_DIR/ 2>/dev/null || true"
   
-  # 2. Sanitize Windows CRLF (\r) to Linux LF using sed
-  ssh root@$node "sed -i 's/\r$//' $HADOOP_CONF_DIR/*.xml $HADOOP_CONF_DIR/*.sh $HADOOP_CONF_DIR/workers 2>/dev/null || true"
+  # 2. Sanitize Windows CRLF to Linux LF
+  ssh root@$node "dos2unix $HADOOP_CONF_DIR/*.xml $HADOOP_CONF_DIR/*.sh $HADOOP_CONF_DIR/workers 2>/dev/null || true"
 
   # 3. Copy ZooKeeper Configs (Only needed on ZK nodes)
   if [[ "$node" == "node01" || "$node" == "node02" || "$node" == "node03" ]]; then
     ssh root@$node "cp $SHARED_ZK/zoo.cfg $ZK_CONF_DIR/ 2>/dev/null || true"
-    ssh root@$node "sed -i 's/\r$//' $ZK_CONF_DIR/zoo.cfg 2>/dev/null || true"
+    ssh root@$node "dos2unix $ZK_CONF_DIR/zoo.cfg 2>/dev/null || true"
   fi
 
   echo "    $node complete"

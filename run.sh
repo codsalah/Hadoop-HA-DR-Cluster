@@ -18,7 +18,7 @@ done
 echo "  [ORCHESTRATION] All nodes online. Triggering run-all.sh"
 
 # 2. Sanitize and execute the main cluster orchestrator
-sed -i 's/\r$//' /shared/scripts/*.sh
+dos2unix /shared/scripts/*.sh 2>/dev/null
 bash /shared/scripts/run-all.sh
 
 echo "  [IDLE] Cluster is running. Keeping container alive."
