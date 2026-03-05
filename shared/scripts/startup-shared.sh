@@ -8,44 +8,19 @@ ZK_URL="https://archive.apache.org/dist/zookeeper/zookeeper-3.8.6/apache-zookeep
 HADOOP_URL="https://archive.apache.org/dist/hadoop/common/hadoop-3.4.2/hadoop-3.4.2.tar.gz"
 
 if [ -f "$ZK_TAR" ]; then
-<<<<<<< HEAD
-    echo "✅ ZooKeeper tarball already exists — skipping download"
-else
-    echo "Downloading ZooKeeper..."
-    wget -P "$SHARED_DIR" "$ZK_URL" || { echo "❌ ZooKeeper download failed"; exit 1; }
-    echo "✅ ZooKeeper downloaded"
-fi
-
-if [ -f "$HADOOP_TAR" ]; then
-    echo "✅ Hadoop tarball already exists — skipping download"
-else
-    echo "Downloading Hadoop..."
-    wget -P "$SHARED_DIR" "$HADOOP_URL" || { echo "❌ Hadoop download failed"; exit 1; }
-    echo "✅ Hadoop downloaded"
-fi
-
-echo ""
-echo "✅ All downloads complete. You can now run docker-compose up -d"
-=======
     echo "ZooKeeper tarball already exists — skipping download"
 else
     echo "Downloading ZooKeeper..."
-    wget -P "$SHARED_DIR" "$ZK_URL" || { echo "❌ ZooKeeper download failed"; exit 1; }
-    echo "ZooKeeper downloaded"
     wget -P "$SHARED_DIR" "$ZK_URL" || { echo "ZooKeeper download failed"; exit 1; }
-    echo "✅ ZooKeeper downloaded"
+    echo "ZooKeeper downloaded"
 fi
 
 if [ -f "$HADOOP_TAR" ]; then
     echo "Hadoop tarball already exists — skipping download"
 else
     echo "Downloading Hadoop..."
-    wget -P "$SHARED_DIR" "$HADOOP_URL" || { echo "❌ Hadoop download failed"; exit 1; }
-    echo "Hadoop downloaded"
-
     wget -P "$SHARED_DIR" "$HADOOP_URL" || { echo "Hadoop download failed"; exit 1; }
     echo "Hadoop downloaded"
 fi
 echo ""
 echo "All downloads complete. You can now run docker-compose up -d"
->>>>>>> origin/cluster-automation
