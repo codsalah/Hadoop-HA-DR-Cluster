@@ -1,85 +1,140 @@
 version: "3.9"
 
 services:
-  node1:
-    build: . # <-- CHANGED: Tells Docker to use Dockerfile
-    image: hadoop-cluster # <-- CHANGED: Names custom image
-    container_name: node01
-    hostname: node01
+  dr-node01:
+    build: . 
+    image: hadoop-cluster:latest 
+    container_name: dr-node01
+    hostname: dr-node01
     ports:
-      - "8481:8480"
       - "9871:9870"
       - "8081:8088"
-    environment: # <-- ADDED
-      - NODE_ROLE=node01
-    command: bash -c "cp /run.sh /tmp/run.sh && dos2unix /tmp/run.sh && bash /tmp/run.sh" # <-- CHANGED: Triggers orchestrator
+      - "8481:8480"
+      - "2181:2181"
+      - "8020:8020" # NameNode RPC
+    environment: 
+      - NODE_ROLE=dr-node01
+    command: bash -c "cp /run.sh /tmp/run.sh && dos2unix /tmp/run.sh && bash /tmp/run.sh"
     volumes:
       - ./shared:/shared
-      - ./run.sh:/run.sh # <-- ADDED: Mounts the script
-      - node01-data:/opt/hadoop/data # <-- ADDED
-      - node01-zk:/opt/zookeeper/data # <-- ADDED
+      - ./run.sh:/run.sh 
+      - dr-node01-data:/opt/hadoop/data 
+      - dr-node01-zk:/opt/zookeeper/data 
     networks:
       - cluster-network
-  node2:
-    image: hadoop-cluster
-    container_name: node02
-    hostname: node02
+    extra_hosts:
+      - "node01:100.75.183.48"
+      - "node02:100.75.183.48"
+      - "node03:100.75.183.48"
+      - "node04:100.75.183.48"
+      - "node05:100.75.183.48"
+
+  dr-node02:
+    image: hadoop-cluster:latest
+    container_name: dr-node02
+    hostname: dr-node02
     ports:
-      - "8482:8480"
       - "9872:9870"
       - "8082:8088"
+      - "8482:8480"
+      - "2182:2181"
+    environment:
+      - NODE_ROLE=dr-node02
     command: bash -c "service ssh start && sleep infinity"
     volumes:
       - ./shared:/shared
+      - dr-node02-data:/opt/hadoop/data
+      - dr-node02-zk:/opt/zookeeper/data
     networks:
       - cluster-network
+    extra_hosts:
+      - "node01:100.75.183.48"
+      - "node02:100.75.183.48"
+      - "node03:100.75.183.48"
+      - "node04:100.75.183.48"
+      - "node05:100.75.183.48"
 
-  node3:
-    image: hadoop-cluster
-    container_name: node03
-    hostname: node03
+  dr-node03:
+    image: hadoop-cluster:latest
+    container_name: dr-node03
+    hostname: dr-node03
     ports:
       - "8483:8480"
-      - "9873:9870"
-      - "8083:8088"
+      - "2183:2181"
+      - "8083:8042"
+      - "9866:9866" # DataNode Transfer
+    environment:
+      - NODE_ROLE=dr-node03
     command: bash -c "service ssh start && sleep infinity"
     volumes:
       - ./shared:/shared
+      - dr-node03-data:/opt/hadoop/data
+      - dr-node03-zk:/opt/zookeeper/data
     networks:
       - cluster-network
+    extra_hosts:
+      - "node01:100.75.183.48"
+      - "node02:100.75.183.48"
+      - "node03:100.75.183.48"
+      - "node04:100.75.183.48"
+      - "node05:100.75.183.48"
 
-  node4:
-    image: hadoop-cluster
-    container_name: node04
-    hostname: node04
+  dr-node04:
+    image: hadoop-cluster:latest
+    container_name: dr-node04
+    hostname: dr-node04
     ports:
       - "8484:8480"
       - "9874:9870"
       - "8084:8088"
+    environment:
+      - NODE_ROLE=dr-node04
     command: bash -c "service ssh start && sleep infinity"
     volumes:
       - ./shared:/shared
+      - dr-node04-data:/opt/hadoop/data
     networks:
       - cluster-network
-
-  node5:
-    image: hadoop-cluster
-    container_name: node05
-    hostname: node05
+    extra_hosts:
+      - "node01:100.75.183.48"
+      - "node02:100.75.183.48"
+      - "node03:100.75.183.48"
+      - "node04:100.75.183.48"
+      - "node05:100.75.183.48"  
+      
+  dr-node05:
+    image: hadoop-cluster:latest
+    container_name: dr-node05
+    hostname: dr-node05
     ports:
       - "8485:8480"
       - "9875:9870"
       - "8085:8088"
+    environment:
+      - NODE_ROLE=dr-node05
     command: bash -c "service ssh start && sleep infinity"
     volumes:
       - ./shared:/shared
+      - dr-node05-data:/opt/hadoop/data
     networks:
       - cluster-network
+    extra_hosts:
+      - "node01:100.75.183.48"
+      - "node02:100.75.183.48"
+      - "node03:100.75.183.48"
+      - "node04:100.75.183.48"
+      - "node05:100.75.183.48"  
+
+volumes:
+  dr-node01-data:
+  dr-node01-zk:
+  dr-node02-data:
+  dr-node02-zk:
+  dr-node03-data:
+  dr-node03-zk:
+  dr-node04-data:
+  dr-node05-data:
 
 networks:
   cluster-network:
     driver: bridge
-# <-- ADDED: Named Volumes
-volumes:
-  node01-data:
-  node01-zk:
