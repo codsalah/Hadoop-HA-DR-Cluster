@@ -1,6 +1,5 @@
 #!/bin/bash
 # 02-journalnodes.sh — Start JournalNode daemons on node01, node02, node03
-# Service-centric: this script handles ONLY the HDFS JournalNode layer.
 
 set -e
 
@@ -9,14 +8,16 @@ JOURNAL_DIR="/var/hadoop/journal"
 
 JN_NODES="node01 node02 node03"
 
-log()  { echo "[$(date '+%H:%M:%S')] [JournalNode] $*"; }
-
-# ── Start JournalNodes in parallel ───────────────────────────────────────────
-# Race condition mitigation: mkdir + daemon start chained with && inside a
-# single SSH call before backgrounding, so the directory always exists before
-# the daemon writes to it.
+log() { echo "[$(date '+%H:%M:%S')] [JournalNode] $*"; }
 
 for node in $JN_NODES; do
+  # ── Skip if JournalNode is already running on this node ────────────────────
+  ALREADY=$(ssh root@$node "jps 2>/dev/null | grep -c JournalNode" || echo 0)
+  if [[ "$ALREADY" -ge 1 ]]; then
+    log "$node: JournalNode already running — skipping."
+    continue
+  fi
+
   log "Starting JournalNode on $node..."
   ssh root@$node "mkdir -p $JOURNAL_DIR && rm -f /tmp/hadoop-root-journalnode.pid && $HADOOP_BIN --daemon start journalnode" &
 done
@@ -24,7 +25,6 @@ wait
 
 sleep 3
 
-# ── Verify JournalNodes are listening on port 8485 ───────────────────────────
 log "Verifying JournalNode ports..."
 for node in $JN_NODES; do
   ssh root@$node "nc -z localhost 8485" 2>/dev/null && \
