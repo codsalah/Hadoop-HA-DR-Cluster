@@ -71,4 +71,9 @@
     <name>dfs.replication</name>
     <value>1</value>
   </property>
+  <!-- NameNode hostname -->
+  <property>
+    <name>dfs.client.use.datanode.hostname</name>
+    <value>true</value>
+  </property>
 </configuration>

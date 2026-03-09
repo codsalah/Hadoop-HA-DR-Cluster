@@ -10,7 +10,12 @@ services:
       - "8481:8480"
       - "9871:9870"
       - "8081:8088"
-    environment: # <-- ADDED
+      - "8020:8020" # NameNode RPC, needed for DistCp but missing 9866 port
+    extra_hosts:
+      - "dr-node01:100.115.195.121" # DR_TAILSCALE_IP FOR NN
+      - "dr-node03:100.115.195.121" # DR_TAILSCALE_IP FOR JN
+    environment:
+      # <-- ADDED
       - NODE_ROLE=node01
     command: bash -c "cp /run.sh /tmp/run.sh && dos2unix /tmp/run.sh && bash /tmp/run.sh" # <-- CHANGED: Triggers orchestrator
     volumes:
@@ -28,6 +33,9 @@ services:
       - "8482:8480"
       - "9872:9870"
       - "8082:8088"
+    extra_hosts:
+      - "dr-node01:100.115.195.121" # DR_TAILSCALE_IP FOR NN
+      - "dr-node03:100.115.195.121" # DR_TAILSCALE_IP FOR JN
     command: bash -c "service ssh start && sleep infinity"
     volumes:
       - ./shared:/shared
@@ -42,6 +50,10 @@ services:
       - "8483:8480"
       - "9873:9870"
       - "8083:8088"
+      - "9866:9866" # HDFS DataNode, needed for DistCp (first node)
+    extra_hosts:
+      - "dr-node01:100.115.195.121" # DR_TAILSCALE_IP FOR NN
+      - "dr-node03:100.115.195.121" # DR_TAILSCALE_IP FOR JN
     command: bash -c "service ssh start && sleep infinity"
     volumes:
       - ./shared:/shared
@@ -56,6 +68,9 @@ services:
       - "8484:8480"
       - "9874:9870"
       - "8084:8088"
+    extra_hosts:
+      - "dr-node01:100.115.195.121" # DR_TAILSCALE_IP FOR NN
+      - "dr-node03:100.115.195.121" # DR_TAILSCALE_IP FOR JN
     command: bash -c "service ssh start && sleep infinity"
     volumes:
       - ./shared:/shared
@@ -70,6 +85,9 @@ services:
       - "8485:8480"
       - "9875:9870"
       - "8085:8088"
+    extra_hosts:
+      - "dr-node01:100.115.195.121" # DR_TAILSCALE_IP FOR NN
+      - "dr-node03:100.115.195.121" # DR_TAILSCALE_IP FOR JN
     command: bash -c "service ssh start && sleep infinity"
     volumes:
       - ./shared:/shared
